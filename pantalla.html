@@ -9,42 +9,59 @@
     body {
       margin: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
       background-color: #000;
       color: white;
-      font-size: 2rem;
       text-align: center;
-      flex-direction: column;
     }
-    img {
-      margin-top: 1rem;
-      max-width: 300px;
+    #mensaje {
+      font-size: 5rem;
+      margin: 2rem 0;
+    }
+    #imagen {
+      max-width: 80vw;
+      max-height: 60vh;
       border-radius: 1rem;
+      display: none;
+    }
+    #qr {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    #qr img {
+      width: 120px;
+      border: 2px solid white;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
+  <div id="qr">
+    <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=https%3A//pablo170318.github.io/huella-firebase/entrada.html" alt="QR acceso">
+    <div style="font-size: 0.9rem;">Escanea para ingresar</div>
+  </div>
+
   <div id="mensaje">Esperando registros...</div>
-  <img id="imagen" src="" alt="" style="display: none;">
+  <img id="imagen" src="" alt="">
   <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    
-const firebaseConfig = {
-  apiKey: "AIzaSyC1kVW_Vh9_xn9dpQVkWtjW2yDPyjrVKJo",
-  authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
-  databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
-  projectId: "huella-carbono-evento-ae24c",
-  storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
-  messagingSenderId: "369872204435",
-  appId: "1:369872204435:web:439cff647555b96471d366"
-};
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyC1kVW_Vh9_xn9dpQVkWtjW2yDPyjrVKJo",
+      authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
+      databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
+      projectId: "huella-carbono-evento-ae24c",
+      storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
+      messagingSenderId: "369872204435",
+      appId: "1:369872204435:web:439cff647555b96471d366"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -67,7 +84,7 @@ const firebaseConfig = {
       const nombre = cola.shift();
       mostrando = true;
 
-      mensaje.innerHTML = `🎉 ¡Felicitaciones <b>{nombre}</b>! 🎉`;
+      mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
       imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
       imagen.style.display = "block";
       sound.play();
