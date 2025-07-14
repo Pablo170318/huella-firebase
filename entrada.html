@@ -4,10 +4,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Medí mi huella</title>
+  <title>Registro Huella</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #2c3e50, #3498db);
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    input {
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      width: 80%;
+      max-width: 400px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    button {
+      font-size: 1.5rem;
+      padding: 0.5rem 2rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #1abc9c;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #aaa;
+    }
+  </style>
 </head>
 <body>
-  <h2>Ingresa tu nombre:</h2>
+  <h2>Ingresa tu nombre</h2>
   <input type="text" id="nombre" placeholder="Tu nombre" />
   <button id="enviar" disabled>Medí mi huella de carbono</button>
 
