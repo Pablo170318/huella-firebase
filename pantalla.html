@@ -28,7 +28,6 @@
       display: none;
     }
     #qr {
-      z-index: 1000;
       position: absolute;
       top: 10px;
       right: 10px;
@@ -46,8 +45,6 @@
     <div style="font-size: 0.9rem;">Escanea para ingresar</div>
   </div>
 
-  <div id="contador" style="font-size: 2rem; margin-bottom: 1rem;">Participantes: 0</div>
-  <button onclick="reiniciarContador()" style="font-size: 1.2rem;">Reiniciar contador</button>
   <div id="mensaje">Esperando registros...</div>
   <img id="imagen" src="" alt="">
   <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
@@ -56,17 +53,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    
-const firebaseConfig = {
-  apiKey: "AIzaSyC1kVW_Vh9_xn9dpQVkWtjW2yDPyjrVKJo",
-  authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
-  databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
-  projectId: "huella-carbono-evento-ae24c",
-  storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
-  messagingSenderId: "369872204435",
-  appId: "1:369872204435:web:439cff647555b96471d366"
-};
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyC1kVW_Vh9_xn9dpQVkWtjW2yDPyjrVKJo",
+      authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
+      databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
+      projectId: "huella-carbono-evento-ae24c",
+      storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
+      messagingSenderId: "369872204435",
+      appId: "1:369872204435:web:439cff647555b96471d366"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -75,51 +70,32 @@ const firebaseConfig = {
     const mensaje = document.getElementById("mensaje");
     const imagen = document.getElementById("imagen");
     const sound = document.getElementById("sound");
-    const contadorDiv = document.getElementById("contador");
-    let totalParticipantes = 0;
-    function actualizarContador() {
-      contadorDiv.innerText = `Participantes: ${totalParticipantes}`;
-    }
-    function reiniciarContador() {
-      totalParticipantes = 0;
-      actualizarContador();
-    }
 
     const cola = [];
     let mostrando = false;
 
-    import("https://cdn.jsdelivr.net/npm/fireworks-js@2/dist/fireworks.js").then(module => {
-      const Fireworks = module.Fireworks;
-      const fireworks = new Fireworks(document.body);
-
-      onChildAdded(felicitacionesRef, (data) => {
-        const entry = data.val();
-        cola.push(entry);
-        totalParticipantes++;
-        actualizarContador();
-        if (!mostrando) mostrarSiguiente();
-      });
-
-      function mostrarSiguiente() {
-        if (mostrando || cola.length === 0) return;
-        const { nombre } = cola.shift();
-        mostrando = true;
-
-        mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
-        imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
-        imagen.style.display = "block";
-        sound.play();
-        fireworks.start();
-
-        setTimeout(() => {
-          fireworks.stop();
-          mensaje.innerText = "🎊 Esperando registros...";
-          imagen.style.display = "none";
-          mostrando = false;
-          mostrarSiguiente();
-        }, 5 * 60 * 1000);
-      }
+    onChildAdded(felicitacionesRef, (data) => {
+      cola.push(data.val().nombre);
+      mostrarSiguiente();
     });
+
+    function mostrarSiguiente() {
+      if (mostrando || cola.length === 0) return;
+      const nombre = cola.shift();
+      mostrando = true;
+
+      mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
+      imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
+      imagen.style.display = "block";
+      sound.play();
+
+      setTimeout(() => {
+        mensaje.innerText = "Esperando registros...";
+        imagen.style.display = "none";
+        mostrando = false;
+        mostrarSiguiente();
+      }, 5000);
+    }
   </script>
 </body>
 </html>
