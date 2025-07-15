@@ -120,8 +120,10 @@
         sound.currentTime = 0;
         sound.play();
 
-        // No repetimos, solo una vez y esperamos 20 segundos
+        // Detener sonido después de 20 segundos
         setTimeout(() => {
+          sound.pause();
+          sound.currentTime = 0;
           mensaje.style.opacity = 0;
           imagen.style.display = "none";
           fireworks.stop();
