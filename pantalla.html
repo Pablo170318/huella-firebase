@@ -120,13 +120,8 @@
         sound.currentTime = 0;
         sound.play();
 
-        const sonidoIntervalo = setInterval(() => {
-          sound.currentTime = 0;
-          sound.play();
-        }, 5000);
-
+        // No repetimos, solo una vez y esperamos 20 segundos
         setTimeout(() => {
-          clearInterval(sonidoIntervalo);
           mensaje.style.opacity = 0;
           imagen.style.display = "none";
           fireworks.stop();
