@@ -20,6 +20,8 @@
     #mensaje {
       font-size: 5rem;
       margin: 2rem 0;
+      transition: opacity 1s ease;
+      opacity: 1;
     }
     #imagen {
       max-width: 80vw;
@@ -27,30 +29,21 @@
       border-radius: 1rem;
       display: none;
     }
-    #qr {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    #qr img {
-      width: 120px;
-      border: 2px solid white;
-      border-radius: 10px;
+    #fireworks-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
     }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.2/dist/index.umd.min.js"></script>
-
 </head>
 <body>
-  <div id="qr">
-    <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=https%3A//pablo170318.github.io/huella-firebase/entrada.html" alt="QR acceso">
-    <div style="font-size: 0.9rem;">Escanea para ingresar</div>
-  </div>
-
   <div id="mensaje">Esperando registros...</div>
-  <img id="imagen" src="" alt="">
-  <div id="fireworks-container" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none;"></div>
+  <img id="imagen" src="https://pablo170318.github.io/huella-carbono/nono.png" alt="">
+  <div id="fireworks-container"></div>
 
   <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
@@ -63,7 +56,7 @@
       authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
       databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
       projectId: "huella-carbono-evento-ae24c",
-      storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
+      storageBucket: "huella-carbono-evento-ae24c.appspot.com",
       messagingSenderId: "369872204435",
       appId: "1:369872204435:web:439cff647555b96471d366"
     };
@@ -75,45 +68,58 @@
     const mensaje = document.getElementById("mensaje");
     const imagen = document.getElementById("imagen");
     const sound = document.getElementById("sound");
-
-    const cola = [];
-    let mostrando = false;
-
-    const desdeAhora = Date.now();
-
     const container = document.getElementById("fireworks-container");
-    const fireworks = new Fireworks.default(container, { 
+
+    const fireworks = new Fireworks.default(container, {
       rocketsPoint: { min: 0.2, max: 0.8 },
       intensity: 25,
       opacity: 0.8
     });
 
+    const cola = [];
+    let mostrando = false;
+
     onChildAdded(felicitacionesRef, (data) => {
       const registro = data.val();
-      if (registro.timestamp >= desdeAhora) {
-        cola.push(registro.nombre);
-        mostrarSiguiente();
-      }
+      cola.push(registro.nombre);
+      mostrarSiguiente();
     });
 
     function mostrarSiguiente() {
       if (mostrando || cola.length === 0) return;
+
       const nombre = cola.shift();
       mostrando = true;
 
-      mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
-      imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
-      imagen.style.display = "block";
-      sound.play();
-      fireworks.start();
+      mensaje.style.opacity = 0;
 
       setTimeout(() => {
-        mensaje.innerText = "Esperando registros...";
-        imagen.style.display = "none";
-        fireworks.stop();
-        mostrando = false;
-        mostrarSiguiente();
-      }, 5000);
+        mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
+        mensaje.style.opacity = 1;
+        imagen.style.display = "block";
+
+        fireworks.start();
+        sound.currentTime = 0;
+        sound.play();
+
+        const sonidoIntervalo = setInterval(() => {
+          sound.currentTime = 0;
+          sound.play();
+        }, 5000);
+
+        setTimeout(() => {
+          clearInterval(sonidoIntervalo);
+          mensaje.style.opacity = 0;
+          imagen.style.display = "none";
+          fireworks.stop();
+          setTimeout(() => {
+            mensaje.innerText = "Esperando registros...";
+            mensaje.style.opacity = 1;
+            mostrando = false;
+            mostrarSiguiente();
+          }, 1000);
+        }, 240000);
+      }, 1000);
     }
   </script>
 </body>
