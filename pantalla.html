@@ -84,14 +84,21 @@
 
     const cola = [];
     let mostrando = false;
-    const idsMostrados = new Set();
+
+    // Leer desde localStorage los IDs ya mostrados
+    let idsMostrados = new Set(JSON.parse(localStorage.getItem("idsMostrados") || "[]"));
+
+    function guardarID(id) {
+      idsMostrados.add(id);
+      localStorage.setItem("idsMostrados", JSON.stringify(Array.from(idsMostrados)));
+    }
 
     onChildAdded(felicitacionesRef, (data) => {
       const registro = data.val();
       const id = data.key;
       if (!idsMostrados.has(id)) {
         cola.push({ id, nombre: registro.nombre });
-        idsMostrados.add(id);
+        guardarID(id);
         mostrarSiguiente();
       }
     });
