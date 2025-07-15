@@ -13,10 +13,11 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      overflow: hidden;
       color: white;
       text-align: center;
       background-image: url('fondo.PNG');
-      background-size: cover;
+      background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
       background-color: black;
@@ -83,12 +84,14 @@
 
     const cola = [];
     let mostrando = false;
-    const ahora = Date.now();
+    const idsMostrados = new Set();
 
     onChildAdded(felicitacionesRef, (data) => {
       const registro = data.val();
-      if (registro.timestamp >= ahora) {
-        cola.push(registro.nombre);
+      const id = data.key;
+      if (!idsMostrados.has(id)) {
+        cola.push({ id, nombre: registro.nombre });
+        idsMostrados.add(id);
         mostrarSiguiente();
       }
     });
@@ -96,7 +99,7 @@
     function mostrarSiguiente() {
       if (mostrando || cola.length === 0) return;
 
-      const nombre = cola.shift();
+      const { nombre } = cola.shift();
       mostrando = true;
 
       mensaje.style.opacity = 0;
