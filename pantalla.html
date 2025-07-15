@@ -13,9 +13,12 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      background-color: #000;
       color: white;
       text-align: center;
+      background-image: url('fondo.PNG');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     #mensaje {
       font-size: 5rem;
@@ -78,11 +81,14 @@
 
     const cola = [];
     let mostrando = false;
+    const ahora = Date.now();  // momento en que se carga la página
 
     onChildAdded(felicitacionesRef, (data) => {
       const registro = data.val();
-      cola.push(registro.nombre);
-      mostrarSiguiente();
+      if (registro.timestamp >= ahora) {
+        cola.push(registro.nombre);
+        mostrarSiguiente();
+      }
     });
 
     function mostrarSiguiente() {
