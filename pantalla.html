@@ -13,13 +13,21 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      background-color: #000;
+      overflow: hidden;
       color: white;
       text-align: center;
+      background-image: url('fondo.PNG');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: black;
     }
     #mensaje {
-      font-size: 5rem;
+      font-size: 4rem;
       margin: 2rem 0;
+      transition: opacity 1s ease;
+      opacity: 1;
+      max-width: 90vw;
     }
     #imagen {
       max-width: 80vw;
@@ -27,12 +35,23 @@
       border-radius: 1rem;
       display: none;
     }
+    #fireworks-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.2/dist/index.umd.min.js"></script>
 </head>
 <body>
   <div id="mensaje">Esperando registros...</div>
-  <img id="imagen" src="" alt="">
-  <audio id="sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_91e7fa309b.mp3" preload="auto"></audio>
+  <img id="imagen" src="https://pablo170318.github.io/huella-carbono/nono.png" alt="">
+  <div id="fireworks-container"></div>
+  <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -55,41 +74,70 @@
     const mensaje = document.getElementById("mensaje");
     const imagen = document.getElementById("imagen");
     const sound = document.getElementById("sound");
+    const container = document.getElementById("fireworks-container");
+
+    const fireworks = new Fireworks.default(container, {
+      rocketsPoint: { min: 0.2, max: 0.8 },
+      intensity: 25,
+      opacity: 0.8
+    });
 
     const cola = [];
     let mostrando = false;
 
+    // Leer desde localStorage los IDs ya mostrados
+    let idsMostrados = new Set(JSON.parse(localStorage.getItem("idsMostrados") || "[]"));
+
+    function guardarID(id) {
+      idsMostrados.add(id);
+      localStorage.setItem("idsMostrados", JSON.stringify(Array.from(idsMostrados)));
+    }
+
     onChildAdded(felicitacionesRef, (data) => {
-      cola.push(data.val().nombre);
-      mostrarSiguiente();
+      const registro = data.val();
+      const id = data.key;
+      if (!idsMostrados.has(id)) {
+        cola.push({ id, nombre: registro.nombre });
+        guardarID(id);
+        mostrarSiguiente();
+      }
     });
 
     function mostrarSiguiente() {
       if (mostrando || cola.length === 0) return;
-      const nombre = cola.shift();
+
+      const { nombre } = cola.shift();
       mostrando = true;
 
-      mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
-      imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
-      imagen.style.display = "block";
-
-      let repeticiones = 0;
-      function reproducir() {
-        sound.currentTime = 0;
-        sound.play();
-        repeticiones++;
-        if (repeticiones < 2) {
-          setTimeout(reproducir, 20000);
-        }
-      }
-      reproducir();
+      mensaje.style.opacity = 0;
 
       setTimeout(() => {
-        mensaje.innerText = "Esperando registros...";
-        imagen.style.display = "none";
-        mostrando = false;
-        mostrarSiguiente();
-      }, 240000); // 4 minutos
+        mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
+        mensaje.style.opacity = 1;
+        imagen.style.display = "block";
+
+        fireworks.start();
+        sound.currentTime = 0;
+        sound.play();
+
+        const sonidoIntervalo = setInterval(() => {
+          sound.currentTime = 0;
+          sound.play();
+        }, 5000);
+
+        setTimeout(() => {
+          clearInterval(sonidoIntervalo);
+          mensaje.style.opacity = 0;
+          imagen.style.display = "none";
+          fireworks.stop();
+          setTimeout(() => {
+            mensaje.innerText = "Esperando registros...";
+            mensaje.style.opacity = 1;
+            mostrando = false;
+            mostrarSiguiente();
+          }, 1000);
+        }, 240000);
+      }, 1000);
     }
   </script>
 </body>
