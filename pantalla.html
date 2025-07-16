@@ -116,8 +116,23 @@
 
         fireworks.start();
 
-        sound.currentTime = 0;
-        const playAttempt = sound.play();
+        
+        let repeticiones = 0;
+        function reproducirAplausos() {
+          if (repeticiones >= 3) return;
+          sound.currentTime = 0;
+          sound.play().catch(err => console.warn("Sonido bloqueado:", err));
+          repeticiones++;
+        }
+        reproducirAplausos();
+        const intervalo = setInterval(() => {
+          if (repeticiones >= 3) {{
+            clearInterval(intervalo);
+          }} else {{
+            reproducirAplausos();
+          }}
+        }, 20000);
+
         if (playAttempt !== undefined) {
           playAttempt.catch((err) => {
             console.warn("⚠️ El navegador bloqueó el sonido:", err);
