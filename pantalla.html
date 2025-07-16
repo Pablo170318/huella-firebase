@@ -117,16 +117,21 @@
         imagen.style.display = "block";
 
         fireworks.start();
-        sound.currentTime = 0;
-        sound.play();
 
-        const sonidoIntervalo = setInterval(() => {
+        // Reproducir aplausos 5 veces cada 5 segundos
+        let count = 0;
+        function reproducirAplausos() {
+          if (count >= 5) return;
           sound.currentTime = 0;
           sound.play();
-        }, 5000);
+          count++;
+          if (count < 5) {
+            setTimeout(reproducirAplausos, 5000);
+          }
+        }
+        reproducirAplausos();
 
         setTimeout(() => {
-          clearInterval(sonidoIntervalo);
           mensaje.style.opacity = 0;
           imagen.style.display = "none";
           fireworks.stop();
