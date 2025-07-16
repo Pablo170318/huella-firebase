@@ -27,27 +27,12 @@
       border-radius: 1rem;
       display: none;
     }
-    #qr {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    #qr img {
-      width: 120px;
-      border: 2px solid white;
-      border-radius: 10px;
-    }
   </style>
 </head>
 <body>
-  <div id="qr">
-    <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=https%3A//pablo170318.github.io/huella-firebase/entrada.html" alt="QR acceso">
-    <div style="font-size: 0.9rem;">Escanea para ingresar</div>
-  </div>
-
   <div id="mensaje">Esperando registros...</div>
   <img id="imagen" src="" alt="">
-  <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
+  <audio id="sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_91e7fa309b.mp3" preload="auto"></audio>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -58,7 +43,7 @@
       authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
       databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
       projectId: "huella-carbono-evento-ae24c",
-      storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
+      storageBucket: "huella-carbono-evento-ae24c.appspot.com",
       messagingSenderId: "369872204435",
       appId: "1:369872204435:web:439cff647555b96471d366"
     };
@@ -87,14 +72,24 @@
       mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
       imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
       imagen.style.display = "block";
-      sound.play();
+
+      let repeticiones = 0;
+      function reproducir() {
+        sound.currentTime = 0;
+        sound.play();
+        repeticiones++;
+        if (repeticiones < 2) {
+          setTimeout(reproducir, 20000);
+        }
+      }
+      reproducir();
 
       setTimeout(() => {
         mensaje.innerText = "Esperando registros...";
         imagen.style.display = "none";
         mostrando = false;
         mostrarSiguiente();
-      }, 5000);
+      }, 240000); // 4 minutos
     }
   </script>
 </body>
