@@ -13,21 +13,13 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      overflow: hidden;
+      background-color: #000;
       color: white;
       text-align: center;
-      background-image: url('fondo.PNG');
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-color: black;
     }
     #mensaje {
-      font-size: 4rem;
+      font-size: 5rem;
       margin: 2rem 0;
-      transition: opacity 1s ease;
-      opacity: 1;
-      max-width: 90vw;
     }
     #imagen {
       max-width: 80vw;
@@ -35,23 +27,27 @@
       border-radius: 1rem;
       display: none;
     }
-    #fireworks-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
+    #qr {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    #qr img {
+      width: 120px;
+      border: 2px solid white;
+      border-radius: 10px;
     }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.2/dist/index.umd.min.js"></script>
 </head>
 <body>
+  <div id="qr">
+    <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=https%3A//pablo170318.github.io/huella-firebase/entrada.html" alt="QR acceso">
+    <div style="font-size: 0.9rem;">Escanea para ingresar</div>
+  </div>
+
   <div id="mensaje">Esperando registros...</div>
-  <img id="imagen" src="https://pablo170318.github.io/huella-carbono/nono.png" alt="">
-  <div id="fireworks-container"></div>
-  <audio id="sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_91e7fa309b.mp3" preload="auto"></audio>
+  <img id="imagen" src="" alt="">
+  <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -62,7 +58,7 @@
       authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
       databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
       projectId: "huella-carbono-evento-ae24c",
-      storageBucket: "huella-carbono-evento-ae24c.appspot.com",
+      storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
       messagingSenderId: "369872204435",
       appId: "1:369872204435:web:439cff647555b96471d366"
     };
@@ -74,88 +70,31 @@
     const mensaje = document.getElementById("mensaje");
     const imagen = document.getElementById("imagen");
     const sound = document.getElementById("sound");
-    const container = document.getElementById("fireworks-container");
-
-    const fireworks = new Fireworks.default(container, {
-      rocketsPoint: { min: 0.2, max: 0.8 },
-      intensity: 25,
-      opacity: 0.8
-    });
 
     const cola = [];
     let mostrando = false;
-    let idsMostrados = new Set(JSON.parse(localStorage.getItem("idsMostrados") || "[]"));
-
-    function guardarID(id) {
-      idsMostrados.add(id);
-      localStorage.setItem("idsMostrados", JSON.stringify(Array.from(idsMostrados)));
-    }
 
     onChildAdded(felicitacionesRef, (data) => {
-      const registro = data.val();
-      const id = data.key;
-      if (!idsMostrados.has(id)) {
-        cola.push({ id, nombre: registro.nombre });
-        guardarID(id);
-        mostrarSiguiente();
-      }
+      cola.push(data.val().nombre);
+      mostrarSiguiente();
     });
 
     function mostrarSiguiente() {
       if (mostrando || cola.length === 0) return;
-
-      const { nombre } = cola.shift();
+      const nombre = cola.shift();
       mostrando = true;
 
-      mensaje.style.opacity = 0;
+      mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
+      imagen.src = "https://pablo170318.github.io/huella-carbono/nono.png";
+      imagen.style.display = "block";
+      sound.play();
 
       setTimeout(() => {
-        mensaje.innerHTML = `🎉 ¡Felicitaciones <b>${nombre}</b>! 🎉`;
-        mensaje.style.opacity = 1;
-        imagen.style.display = "block";
-
-        fireworks.start();
-
-        
-        let repeticiones = 0;
-        function reproducirAplausos() {
-          if (repeticiones >= 3) return;
-          sound.currentTime = 0;
-          sound.play().catch(err => console.warn("Sonido bloqueado:", err));
-          repeticiones++;
-        }
-        reproducirAplausos();
-        const intervalo = setInterval(() => {
-          if (repeticiones >= 3) {{
-            clearInterval(intervalo);
-          }} else {{
-            reproducirAplausos();
-          }}
-        }, 20000);
-
-        if (playAttempt !== undefined) {
-          playAttempt.catch((err) => {
-            console.warn("⚠️ El navegador bloqueó el sonido:", err);
-          });
-        }
-
-        setTimeout(() => {
-          sound.pause();
-          sound.currentTime = 0;
-        }, 20000); // Detener después de 20s
-
-        setTimeout(() => {
-          mensaje.style.opacity = 0;
-          imagen.style.display = "none";
-          fireworks.stop();
-          setTimeout(() => {
-            mensaje.innerText = "Esperando registros...";
-            mensaje.style.opacity = 1;
-            mostrando = false;
-            mostrarSiguiente();
-          }, 1000);
-        }, 240000);
-      }, 1000);
+        mensaje.innerText = "Esperando registros...";
+        imagen.style.display = "none";
+        mostrando = false;
+        mostrarSiguiente();
+      }, 5000);
     }
   </script>
 </body>

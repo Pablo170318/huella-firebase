@@ -40,12 +40,10 @@ const firebaseConfig = {
     enviarBtn.addEventListener('click', () => {
       const nombre = nombreInput.value.trim();
       if (nombre) {
-
         push(ref(db, 'felicitaciones'), {
           nombre: nombre,
-          timestamp: Date.now()  // timestamp como número para comparación
+          timestamp: Date.now()
         });
-
         enviarBtn.disabled = true;
         nombreInput.disabled = true;
         enviarBtn.innerText = "¡Gracias!";
