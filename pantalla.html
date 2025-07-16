@@ -51,7 +51,7 @@
   <div id="mensaje">Esperando registros...</div>
   <img id="imagen" src="https://pablo170318.github.io/huella-carbono/nono.png" alt="">
   <div id="fireworks-container"></div>
-  <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3" preload="auto"></audio>
+  <audio id="sound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -85,6 +85,7 @@
     const cola = [];
     let mostrando = false;
 
+    // Leer desde localStorage los IDs ya mostrados
     let idsMostrados = new Set(JSON.parse(localStorage.getItem("idsMostrados") || "[]"));
 
     function guardarID(id) {
@@ -116,21 +117,16 @@
         imagen.style.display = "block";
 
         fireworks.start();
-
         sound.currentTime = 0;
-        const playPromise = sound.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            setTimeout(() => {
-              sound.pause();
-              sound.currentTime = 0;
-            }, 20000); // 20 segundos
-          }).catch((error) => {
-            console.warn("El sonido no se pudo reproducir automáticamente.");
-          });
-        }
+        sound.play();
+
+        const sonidoIntervalo = setInterval(() => {
+          sound.currentTime = 0;
+          sound.play();
+        }, 5000);
 
         setTimeout(() => {
+          clearInterval(sonidoIntervalo);
           mensaje.style.opacity = 0;
           imagen.style.display = "none";
           fireworks.stop();

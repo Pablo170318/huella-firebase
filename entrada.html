@@ -15,15 +15,17 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC1kVW_Vh9_xn9dpQVkWtjW2yDPyjrVKJo",
-      authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
-      databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
-      projectId: "huella-carbono-evento-ae24c",
-      storageBucket: "huella-carbono-evento-ae24c.appspot.com",
-      messagingSenderId: "369872204435",
-      appId: "1:369872204435:web:439cff647555b96471d366"
-    };
+    
+const firebaseConfig = {
+  apiKey: "AIzaSyC1kVW_Vh9_xn9dpQVkWtjW2yDPyjrVKJo",
+  authDomain: "huella-carbono-evento-ae24c.firebaseapp.com",
+  databaseURL: "https://huella-carbono-evento-ae24c-default-rtdb.firebaseio.com",
+  projectId: "huella-carbono-evento-ae24c",
+  storageBucket: "huella-carbono-evento-ae24c.firebasestorage.app",
+  messagingSenderId: "369872204435",
+  appId: "1:369872204435:web:439cff647555b96471d366"
+};
+
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -38,9 +40,10 @@
     enviarBtn.addEventListener('click', () => {
       const nombre = nombreInput.value.trim();
       if (nombre) {
+
         push(ref(db, 'felicitaciones'), {
           nombre: nombre,
-          timestamp: Date.now()
+          timestamp: Date.now()  // timestamp como número para comparación
         });
 
         enviarBtn.disabled = true;
